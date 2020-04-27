@@ -1,0 +1,25 @@
+{
+  "name": "lapi-geolocation",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Takuto Yanagida",
+  "main": "gulpfile.js",
+  "scripts": {
+    "start": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takty/lapi-geolocation.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/takty/lapi-geolocation/issues"
+  },
+  "homepage": "https://github.com/takty/lapi-geolocation#readme",
+  "dependencies": {
+    "gulp": "^4.0.2",
+    "gulp-changed": "^4.0.2",
+    "gulp-load-plugins": "^2.0.3",
+    "gulp-plumber": "^1.2.1"
+  }
+}
