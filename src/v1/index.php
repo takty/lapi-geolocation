@@ -1,10 +1,10 @@
 <?php
 /**
  *
- * Geolocation
+ * Geolocation API
  *
  * @author Takuto Yanagida
- * @version 2020-04-27
+ * @version 2020-04-28
  *
  */
 
