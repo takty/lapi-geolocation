@@ -44,20 +44,6 @@ function clean_cache() {
 	}
 }
 
-function remove_all( $dir ) {
-	$ps = scandir( $dir );
-	foreach ( $ps as $p ) {
-		if ( $p[0] === '.' ) continue;
-		if ( is_dir( $dir . '/' . $p ) ) {
-			remove_all( $dir . '/' . $p );
-		} else {
-			var_dump( $dir . '/' . $p );
-			unlink( $dir . '/' . $p );
-		}
-	}
-	rmdir( $dir );
-}
-
 function read_cache( $ip ) {
 	$fn = ip2hex( $ip );
 	$today = new DateTime( date( 'Ymd' ) );
@@ -92,15 +78,9 @@ function write_cache( $ip, $loc ) {
 	chown( $path, 'laccolla' );
 }
 
-function is_user_agent_ok( $ua ) {
-	$ps = explode( ' ', $ua );
-	$ms = 0;
-	foreach ( $ps as $p ) {
-		if ( strpos( $p, 'Croqujs/' ) === 0 ) $ms += 1;
-		if ( strpos( $p, 'Electron/' ) === 0 ) $ms += 1;
-	}
-	return $ms === 2;
-}
+
+// -----------------------------------------------------------------------------
+
 
 function get_location( $ip ) {
 	$url = "http://ip-api.com/json/$ip?fields=status,lat,lon";
@@ -166,4 +146,32 @@ function ip2hex( $ip ) {
 	}
 	if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) return false;
 	return strtolower( str_pad( $hex, $is_v4 ? 8 : 32, '0', STR_PAD_LEFT ) );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function remove_all( $dir ) {
+	$ps = scandir( $dir );
+	foreach ( $ps as $p ) {
+		if ( $p[0] === '.' ) continue;
+		if ( is_dir( $dir . '/' . $p ) ) {
+			remove_all( $dir . '/' . $p );
+		} else {
+			var_dump( $dir . '/' . $p );
+			unlink( $dir . '/' . $p );
+		}
+	}
+	rmdir( $dir );
+}
+
+function is_user_agent_ok( $ua ) {
+	$ps = explode( ' ', $ua );
+	$ms = 0;
+	foreach ( $ps as $p ) {
+		if ( strpos( $p, 'Croqujs/' ) === 0 ) $ms += 1;
+		if ( strpos( $p, 'Electron/' ) === 0 ) $ms += 1;
+	}
+	return $ms === 2;
 }
