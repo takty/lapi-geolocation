@@ -30,8 +30,10 @@ echo json_encode( $loc );
 
 
 function clean_cache() {
-	$today = new DateTime( date( 'Ymd' ) );
 	$dir = __DIR__ . '/cache/';
+	if ( ! file_exists( $dir ) ) return;
+
+	$today = new DateTime( date( 'Ymd' ) );
 	$ps = scandir( $dir );
 	foreach ( $ps as $p ) {
 		if ( $p[0] === '.' ) continue;
@@ -45,9 +47,11 @@ function clean_cache() {
 }
 
 function read_cache( $ip ) {
+	$dir = __DIR__ . '/cache/';
+	if ( ! file_exists( $dir ) ) return null;
+
 	$fn = ip2hex( $ip );
 	$today = new DateTime( date( 'Ymd' ) );
-	$dir = __DIR__ . '/cache/';
 	$ps = scandir( $dir, SCANDIR_SORT_DESCENDING );
 	foreach ( $ps as $p ) {
 		if ( $p[0] === '.' ) continue;
