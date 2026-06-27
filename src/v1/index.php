@@ -4,7 +4,7 @@
  * Geolocation API
  *
  * @author Takuto Yanagida
- * @version 2026-06-27
+ * @version 2026-06-28
  *
  */
 
@@ -57,48 +57,55 @@ echo json_encode($loc);
 
 
 function clean_cache(): void {
-	$dir = __DIR__ . '/cache/';
-	if (!file_exists($dir)) return;
+	$base = __DIR__ . '/cache/';
+	if (!is_dir($base)) return;
 
-	$today = new DateTime(date('Ymd'));
-	$ps    = scandir($dir);
+	$ps    = scandir($base);
 	if ($ps === false) return;
+
+	$today = new DateTime('today');
 
 	foreach ($ps as $p) {
 		if ($p[0] === '.') continue;
 		if (!preg_match('/^\d{8}$/', $p)) continue;
 
-		$d = $dir . $p;
-		if (!is_dir($d)) continue;
+		$dir = "$base$p";
+		if (!is_dir($dir)) continue;
 
-		$date = DateTime::createFromFormat('Ymd', $p);
+		$date = DateTime::createFromFormat('!Ymd', $p);
 		if ($date === false) continue;
 
 		$diff = $today->diff($date);
 		if (7 < $diff->days) {
-			remove_all($d);
+			remove_all($dir);
 		}
 	}
 }
 
 function read_cache(string $ip): ?array {
-	$dir = __DIR__ . '/cache/';
-	if (!file_exists($dir)) return null;
+	$base = __DIR__ . '/cache/';
+	if (!is_dir($base)) return null;
 
 	$fn = ip2hex($ip);
 	if ($fn === null) return null;
 
-	$ps = scandir($dir, SCANDIR_SORT_DESCENDING);
+	$ps = scandir($base, SCANDIR_SORT_DESCENDING);
 	if ($ps === false) return null;
 
 	foreach ($ps as $p) {
 		if ($p[0] === '.') continue;
-		$d = $dir . $p . '/';
+		if (!preg_match('/^\d{8}$/', $p)) continue;
 
-		if (file_exists($d . $fn)) {
-			$c = file_get_contents($d . $fn);
-			return json_decode($c, true);
-		}
+		$dir = "$base$p";
+		if (!is_dir($dir)) continue;
+
+		$path = "$base$p/$fn";
+		if (!file_exists($path)) continue;
+
+		$c = file_get_contents($path);
+		if ($c === false) continue;
+
+		return json_decode($c, true);
 	}
 	return null;
 }
@@ -107,14 +114,14 @@ function write_cache(string $ip, array $loc): void {
 	$today = new DateTime(date('Ymd'));
 	$dir   = __DIR__ . '/cache/' . $today->format('Ymd');
 
-	if (!file_exists($dir)) {
+	if (!is_dir($dir)) {
 		$s = mkdir($dir, 0775, true);
 		if ($s) {
 			chmod($dir, 0775);
 			chown($dir, OWNER);
 		}
 	}
-	if (!file_exists($dir)) return;
+	if (!is_dir($dir)) return;
 
 	$fn = ip2hex($ip);
 	if ($fn === null) return;
@@ -210,7 +217,6 @@ function remove_all(string $dir): void {
 		if (is_dir($dir . '/' . $p)) {
 			remove_all($dir . '/' . $p);
 		} else {
-			var_dump($dir . '/' . $p);
 			unlink($dir . '/' . $p);
 		}
 	}
