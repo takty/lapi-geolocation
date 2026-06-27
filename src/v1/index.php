@@ -82,19 +82,19 @@ function clean_cache() {
 
 function read_cache(string $ip): ?array {
 	$dir = __DIR__ . '/cache/';
-	if ( !file_exists( $dir ) ) return null;
+	if (!file_exists($dir)) return null;
 
-	$fn = ip2hex( $ip );
+	$fn = ip2hex($ip);
 	if ($fn === null) return null;
 
-	$ps = scandir( $dir, SCANDIR_SORT_DESCENDING );
-	foreach ( $ps as $p ) {
-		if ( $p[0] === '.' ) continue;
+	$ps = scandir($dir, SCANDIR_SORT_DESCENDING);
+	foreach ($ps as $p) {
+		if ($p[0] === '.') continue;
 		$d = $dir . $p . '/';
 
-		if ( file_exists( $d . $fn ) ) {
-			$c = file_get_contents( $d . $fn );
-			return json_decode( $c, true );
+		if (file_exists($d . $fn)) {
+			$c = file_get_contents($d . $fn);
+			return json_decode($c, true);
 		}
 	}
 	return null;
