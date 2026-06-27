@@ -56,12 +56,13 @@ echo json_encode($loc);
 // -----------------------------------------------------------------------------
 
 
-function clean_cache() {
+function clean_cache(): void {
 	$dir = __DIR__ . '/cache/';
 	if (!file_exists($dir)) return;
 
 	$today = new DateTime(date('Ymd'));
 	$ps    = scandir($dir);
+	if ($ps === false) return;
 
 	foreach ($ps as $p) {
 		if ($p[0] === '.') continue;
@@ -88,6 +89,8 @@ function read_cache(string $ip): ?array {
 	if ($fn === null) return null;
 
 	$ps = scandir($dir, SCANDIR_SORT_DESCENDING);
+	if ($ps === false) return null;
+
 	foreach ($ps as $p) {
 		if ($p[0] === '.') continue;
 		$d = $dir . $p . '/';
@@ -100,7 +103,7 @@ function read_cache(string $ip): ?array {
 	return null;
 }
 
-function write_cache(string $ip, array $loc) {
+function write_cache(string $ip, array $loc): void {
 	$today = new DateTime(date('Ymd'));
 	$dir   = __DIR__ . '/cache/' . $today->format('Ymd');
 
@@ -111,7 +114,7 @@ function write_cache(string $ip, array $loc) {
 			chown($dir, OWNER);
 		}
 	}
-	if (!file_exists($dir)) return false;
+	if (!file_exists($dir)) return;
 
 	$fn = ip2hex($ip);
 	if ($fn === null) return;
@@ -198,8 +201,10 @@ function ip2hex(string $ip): ?string {
 // -----------------------------------------------------------------------------
 
 
-function remove_all(string $dir) {
+function remove_all(string $dir): void {
 	$ps = scandir($dir);
+	if ($ps === false) return;
+
 	foreach ($ps as $p) {
 		if ($p[0] === '.') continue;
 		if (is_dir($dir . '/' . $p)) {
